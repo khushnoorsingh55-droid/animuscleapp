@@ -26,10 +26,14 @@ export default function LoginScreen() {
         const { data, error } = await signIn(email, password);
         if (error) {
           console.error('Login error:', error);
-          Alert.alert('Login Error', error.message || 'Failed to login. Please try again.');
+          const errorMessage = (error as any)?.message || 'Failed to login. Please try again.';
+          Alert.alert('Login Error', errorMessage);
+          setLoading(false);
         } else {
           console.log('Login successful:', data);
-          router.replace('/(tabs)');
+          Alert.alert('Success!', 'You have been logged in successfully!', [
+            { text: 'Continue', onPress: () => router.replace('/(tabs)') }
+          ]);
         }
       } else {
         if (password.length < 6) {
@@ -37,16 +41,18 @@ export default function LoginScreen() {
           setLoading(false);
           return;
         }
-        
+
         const { data, error } = await signUp(email, password, {
-          full_name: email.split('@')[0], // Use email prefix as default name
+          full_name: email.split('@')[0],
         });
         if (error) {
           console.error('Signup error:', error);
-          Alert.alert('Registration Error', error.message || 'Failed to create account. Please try again.');
+          const errorMessage = (error as any)?.message || 'Failed to create account. Please try again.';
+          Alert.alert('Registration Error', errorMessage);
+          setLoading(false);
         } else {
           console.log('Signup successful:', data);
-          Alert.alert('Success!', 'Account created successfully!', [
+          Alert.alert('Account Created!', 'Your account has been created successfully!', [
             { text: 'Continue', onPress: () => router.replace('/(tabs)') }
           ]);
         }
@@ -54,7 +60,6 @@ export default function LoginScreen() {
     } catch (error) {
       console.error('Authentication error:', error);
       Alert.alert('Error', 'An unexpected error occurred. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
